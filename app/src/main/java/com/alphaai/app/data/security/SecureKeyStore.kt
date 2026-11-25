@@ -3,7 +3,7 @@ package com.alphaai.app.data.security
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
+import androidx.security.crypto.MasterKeys
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,14 +25,15 @@ class SecureKeyStore @Inject constructor(
         SERPER("serper_api_key")
     }
 
+    // security-crypto 1.0.0 exposes only the deprecated String-based overload;
+    // the MasterKey.Builder(Context) API arrived in 1.1.0-alpha and is not used here.
+    @Suppress("DEPRECATION")
     private val prefs: SharedPreferences = run {
-        val masterKey = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
+        val masterKey = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
         EncryptedSharedPreferences.create(
-            context,
             FILE_NAME,
             masterKey,
+            context,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )

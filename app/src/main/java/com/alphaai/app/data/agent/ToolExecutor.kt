@@ -17,6 +17,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.URLEncoder
@@ -87,7 +88,11 @@ class ToolExecutor @Inject constructor(
                 val pinnedAddresses = allowed.addresses
                 val client = okHttpClient.newBuilder()
                     .followRedirects(false).followSslRedirects(false)
-                    .dns { host -> if (host.equals(pinnedHost, true)) pinnedAddresses else okhttp3.Dns.SYSTEM.lookup(host) }
+                    .dns(object : okhttp3.Dns {
+                        override fun lookup(hostname: String): List<java.net.InetAddress> =
+                            if (hostname.equals(pinnedHost, true)) pinnedAddresses
+                            else okhttp3.Dns.SYSTEM.lookup(hostname)
+                    })
                     .build()
                 client.newCall(request).execute().use { response ->
                     val text = response.body?.source()?.let { source ->
@@ -153,4 +158,4 @@ class ToolExecutor @Inject constructor(
 
 private fun String.toRequestBodyCompat(mediaType: okhttp3.MediaType) =
     okhttp3.RequestBody.create(mediaType, this)
-private fun String.toMediaTypeCompat() = okhttp3.MediaType.parse(this)!!
+private fun String.toMediaTypeCompat() = mediaTypeOrNull() ?: error("Invalid media type: $this")

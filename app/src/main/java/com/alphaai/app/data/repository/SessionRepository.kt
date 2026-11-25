@@ -60,7 +60,7 @@ class SessionRepository @Inject constructor(
     suspend fun prepareFollowUp(id: Long, text: String, todosJson: String) = sessions.prepareFollowUp(id, text, todosJson)
     suspend fun resume(id: Long, todosJson: String) {
         sessions.setTodos(id, todosJson)
-        sessions.setStatus(id, SessionStatus.RUNNING)
+        sessions.setStatus(id, SessionStatus.RUNNING.name)
     }
     suspend fun setStatus(id: Long, status: SessionStatus) = sessions.setStatus(id, status.name)
     suspend fun complete(id: Long, summary: String?, status: SessionStatus) = sessions.complete(id, summary, status.name)

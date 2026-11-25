@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,6 +43,7 @@ import coil.compose.AsyncImage
 import com.alphaai.app.data.local.ArtifactEntity
 import com.alphaai.app.ui.viewmodel.ArtifactsViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArtifactsScreen(onBack: () -> Unit, vm: ArtifactsViewModel = hiltViewModel()) {
     val artifacts by vm.artifacts.collectAsStateWithLifecycle()
