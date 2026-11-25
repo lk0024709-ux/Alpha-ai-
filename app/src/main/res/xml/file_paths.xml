@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Artifacts produced by the agent, shared via FileProvider -->
+    <files-path name="artifacts" path="artifacts/" />
+    <cache-path name="cache_artifacts" path="artifacts/" />
+    <files-path name="exports" path="exports/" />
+    <external-cache-path name="external_cache" path="." />
+</paths>
