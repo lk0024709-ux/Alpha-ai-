@@ -40,7 +40,7 @@ data class MessageEntity(
     val createdAt: Long
 )
 
-@Entity(tableName = "tool_calls", indices = [Index("sessionId"), Index("createdAt")])
+@Entity(tableName = "tool_calls", indices = [Index("sessionId"), Index("startedAt")])
 data class ToolCallEntity(
     @PrimaryKey val callId: String,
     val sessionId: Long,
