@@ -44,12 +44,7 @@ jobs:
       # ubuntu-latest par Android SDK pehle se hota hai, lekin compileSdk 35
       # ke liye platform + build-tools pakka install kar lete hain.
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: |
-            platforms;android-35
-            build-tools;35.0.0
-            platform-tools
+        run: bash .github/scripts/setup_android_sdk.sh
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -115,12 +110,7 @@ jobs:
           cache: gradle
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: |
-            platforms;android-35
-            build-tools;35.0.0
-            platform-tools
+        run: bash .github/scripts/setup_android_sdk.sh
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
