@@ -15,3 +15,7 @@ Thumbs.db
 # Generated Room schemas are intentionally tracked once committed for migrations;
 # keep generated output local until the first schema has been reviewed.
 app/schemas/
+
+# Python bytecode
+__pycache__/
+*.pyc
