@@ -17,7 +17,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.URLEncoder
@@ -156,6 +155,8 @@ class ToolExecutor @Inject constructor(
     }
 }
 
+@Suppress("DEPRECATION")
 private fun String.toRequestBodyCompat(mediaType: okhttp3.MediaType) =
     okhttp3.RequestBody.create(mediaType, this)
-private fun String.toMediaTypeCompat() = mediaTypeOrNull() ?: error("Invalid media type: $this")
+private fun String.toMediaTypeCompat(): okhttp3.MediaType =
+    okhttp3.MediaType.parse(this) ?: error("Invalid media type: $this")

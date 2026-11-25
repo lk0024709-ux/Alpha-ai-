@@ -76,11 +76,11 @@ fun SettingsScreen(onBack: () -> Unit, vm: SettingsViewModel = hiltViewModel()) 
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(18.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text("Bring your own keys", style = MaterialTheme.typography.headlineSmall)
             Text("Keys are encrypted locally with Android Keystore. They are only attached to provider requests and never synced.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            ApiKeyEntry("Groq", SecureKeyStore.Secret.GROQ, keyPresence[SecureKeyStore.Secret.GROQ] == true, results[Provider.GROQ], "llama-3.3-70b-versatile") { secret, value -> vm.saveKey(secret, value) } { vm.test(Provider.GROQ, "llama-3.3-70b-versatile") }
-            ApiKeyEntry("Google Gemini", SecureKeyStore.Secret.GEMINI, keyPresence[SecureKeyStore.Secret.GEMINI] == true, results[Provider.GEMINI], "gemini-2.0-flash") { secret, value -> vm.saveKey(secret, value) } { vm.test(Provider.GEMINI, "gemini-2.0-flash") }
-            ApiKeyEntry("Hugging Face", SecureKeyStore.Secret.HF, keyPresence[SecureKeyStore.Secret.HF] == true, results[Provider.HF], "Qwen/Qwen2.5-Coder-32B-Instruct") { secret, value -> vm.saveKey(secret, value) } { vm.test(Provider.HF, "Qwen/Qwen2.5-Coder-32B-Instruct") }
-            ApiKeyEntry("E2B sandbox", SecureKeyStore.Secret.E2B, keyPresence[SecureKeyStore.Secret.E2B] == true, sandboxTestResult, "E2B") { secret, value -> vm.saveKey(secret, value) } { vm.testSandbox() }
-            ApiKeyEntry("Serper (optional)", SecureKeyStore.Secret.SERPER, keyPresence[SecureKeyStore.Secret.SERPER] == true, null, "") { secret, value -> vm.saveKey(secret, value) } { }
+            ApiKeyEntry("Groq", SecureKeyStore.Secret.GROQ, keyPresence[SecureKeyStore.Secret.GROQ] == true, results[Provider.GROQ], "llama-3.3-70b-versatile", onSave = { secret, value -> vm.saveKey(secret, value) }, onTest = { vm.test(Provider.GROQ, "llama-3.3-70b-versatile") })
+            ApiKeyEntry("Google Gemini", SecureKeyStore.Secret.GEMINI, keyPresence[SecureKeyStore.Secret.GEMINI] == true, results[Provider.GEMINI], "gemini-2.0-flash", onSave = { secret, value -> vm.saveKey(secret, value) }, onTest = { vm.test(Provider.GEMINI, "gemini-2.0-flash") })
+            ApiKeyEntry("Hugging Face", SecureKeyStore.Secret.HF, keyPresence[SecureKeyStore.Secret.HF] == true, results[Provider.HF], "Qwen/Qwen2.5-Coder-32B-Instruct", onSave = { secret, value -> vm.saveKey(secret, value) }, onTest = { vm.test(Provider.HF, "Qwen/Qwen2.5-Coder-32B-Instruct") })
+            ApiKeyEntry("E2B sandbox", SecureKeyStore.Secret.E2B, keyPresence[SecureKeyStore.Secret.E2B] == true, sandboxTestResult, "E2B", onSave = { secret, value -> vm.saveKey(secret, value) }, onTest = { vm.testSandbox() })
+            ApiKeyEntry("Serper (optional)", SecureKeyStore.Secret.SERPER, keyPresence[SecureKeyStore.Secret.SERPER] == true, null, "", onSave = { secret, value -> vm.saveKey(secret, value) }, onTest = { })
 
             Text("Defaults", style = MaterialTheme.typography.titleLarge)
             EnumDropdown("Default model", model.name, ModelPreference.entries.map { it.name }) { vm.setModel(ModelPreference.valueOf(it)) }
