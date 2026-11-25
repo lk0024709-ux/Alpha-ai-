@@ -21,10 +21,13 @@ permissions:
   contents: read
 
 jobs:
-  # Primary deliverable: the installable APK. Keep this independent of the
-  # unit-test job so a test failure never blocks getting an APK artifact.
+  # Primary deliverable: the installable APK. Independent of the unit-test job
+  # so a test failure never blocks getting an APK artifact.
   build:
     runs-on: ubuntu-latest
+
+    env:
+      GRADLE_LOG: ${{ runner.temp }}/gradle-output.log
 
     steps:
       - name: Checkout Code
@@ -67,7 +70,19 @@ jobs:
           echo "Building flavor: $FLAVOR"
 
       - name: Build with Gradle
-        run: ./gradlew ${{ steps.flavor.outputs.task }}
+        id: gradle
+        continue-on-error: true
+        run: ./gradlew ${{ steps.flavor.outputs.task }} --stacktrace 2>&1 | tee "$GRADLE_LOG"
+
+      - name: Report Gradle errors
+        if: steps.gradle.outcome == 'failure'
+        run: python3 .github/scripts/report_gradle_errors.py "$GRADLE_LOG"
+
+      - name: Fail build on Gradle error
+        if: steps.gradle.outcome == 'failure'
+        run: |
+          echo "::error::Gradle build failed — see annotations above."
+          exit 1
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
@@ -78,10 +93,12 @@ jobs:
           retention-days: 30
 
   # Unit tests run in their own job so their failure is clearly separated from
-  # the APK build, and the actual failing assertions surface readable details.
+  # the APK build, and the actual failing assertions surface as annotations.
   test:
     runs-on: ubuntu-latest
-    needs: [] # run in parallel with build
+
+    env:
+      GRADLE_LOG: ${{ runner.temp }}/gradle-test.log
 
     steps:
       - name: Checkout Code
@@ -105,10 +122,15 @@ jobs:
       - name: Run unit tests
         id: unit_tests
         continue-on-error: true
-        run: ./gradlew testLightDebugUnitTest --continue
+        run: ./gradlew testLightDebugUnitTest --continue --stacktrace 2>&1 | tee "$GRADLE_LOG"
 
-      # Turn every failing test into a GitHub ::error:: annotation (with the
-      # assertion message) so the failure is visible without downloading logs.
+      # Compile errors (Kotlin/Gradle) come first: they mean no test ever ran.
+      - name: Report Gradle errors
+        if: steps.unit_tests.outcome == 'failure'
+        run: python3 .github/scripts/report_gradle_errors.py "$GRADLE_LOG"
+
+      # Turn every failing test into a GitHub ::error:: annotation with the
+      # assertion message, so failures are readable without downloading logs.
       - name: Report unit test failures
         if: always()
         run: |
@@ -126,7 +148,7 @@ jobs:
           for path in files:
               try:
                   root = ET.parse(path).getroot()
-              except Exception as exc:  # noqa: BLE001
+              except Exception as exc:
                   print(f"::warning::Could not parse {path}: {exc}")
                   continue
               for case in root.iter("testcase"):
@@ -148,5 +170,5 @@ jobs:
       - name: Fail job if tests failed
         if: steps.unit_tests.outcome == 'failure'
         run: |
-          echo "::error::Unit tests failed — see the FAILED annotations above for the exact assertion."
+          echo "::error::Unit tests failed — see annotations above for the exact cause."
           exit 1
