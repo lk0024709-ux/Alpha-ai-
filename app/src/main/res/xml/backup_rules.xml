@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude the EncryptedSharedPreferences file holding API keys from every backup. -->
+    <exclude domain="sharedpref" path="alphaai_secure_keys.xml" />
+    <exclude domain="file" path="datastore" />
+</full-backup-content>

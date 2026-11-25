@@ -1,0 +1,17 @@
+# Android / Gradle
+.gradle/
+**/build/
+local.properties
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Android Studio / OS
+.DS_Store
+Thumbs.db
+
+# Generated Room schemas are intentionally tracked once committed for migrations;
+# keep generated output local until the first schema has been reviewed.
+app/schemas/

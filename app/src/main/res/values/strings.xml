@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Alpha AI</string>
+    <string name="channel_agent_run">Agent runs</string>
+    <string name="channel_agent_done">Agent finished</string>
+    <string name="notif_stop">Stop</string>
+    <string name="notif_open">Open</string>
+    <string name="light_mode_badge">LIGHT MODE</string>
+    <string name="action_retry">Retry</string>
+</resources>
