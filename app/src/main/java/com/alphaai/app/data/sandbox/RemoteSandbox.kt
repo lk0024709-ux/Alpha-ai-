@@ -285,20 +285,26 @@ print(base64.b64encode(open('/tmp/screenshot.png','rb').read()).decode('ascii'))
         return Json.encodeToString(kotlinx.serialization.json.JsonPrimitive(s))
     }
 
+    /**
+     * Factory so each task gets its own RemoteSandbox instance (created lazily).
+     *
+     * Declared at file level rather than inside the companion object: KSP cannot
+     * resolve @Inject constructors of companion-nested classes and reports them as
+     * `error.NonExistentClass`, which fails the Hilt/Room processing steps.
+     */
+    @Singleton
+    class Factory @Inject constructor(
+        private val okHttpClient: OkHttpClient,
+        private val keyStore: ApiKeyProvider
+    ) {
+        fun create(): RemoteSandbox = RemoteSandbox(okHttpClient, keyStore)
+    }
+
     companion object {
         private const val TAG = "RemoteSandbox"
         private const val DEFAULT_TEMPLATE = "code-interpreter-v1"
         private const val SANDBOX_TIMEOUT_SECONDS = 3600
         private const val MAX_OUTPUT = 12_000
         private val JSON_MEDIA = "application/json; charset=utf-8".toMediaType()
-
-        /** Factory so each task gets its own RemoteSandbox instance (created lazily). */
-        @Singleton
-        class Factory @Inject constructor(
-            private val okHttpClient: OkHttpClient,
-            private val keyStore: ApiKeyProvider
-        ) {
-            fun create(): RemoteSandbox = RemoteSandbox(okHttpClient, keyStore)
-        }
     }
 }
