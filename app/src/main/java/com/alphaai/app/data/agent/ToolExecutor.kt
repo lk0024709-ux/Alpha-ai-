@@ -17,6 +17,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.URLEncoder
@@ -155,8 +157,8 @@ class ToolExecutor @Inject constructor(
     }
 }
 
-@Suppress("DEPRECATION")
+// OkHttp 4 exposes both of these as String extension functions.
 private fun String.toRequestBodyCompat(mediaType: okhttp3.MediaType) =
-    okhttp3.RequestBody.create(mediaType, this)
+    this.toRequestBody(mediaType)
 private fun String.toMediaTypeCompat(): okhttp3.MediaType =
-    okhttp3.MediaType.parse(this) ?: error("Invalid media type: $this")
+    this.toMediaTypeOrNull() ?: error("Invalid media type: $this")
